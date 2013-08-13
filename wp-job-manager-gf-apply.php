@@ -72,7 +72,7 @@ class Astoundify_Job_Manager_Apply {
 	 */
 	private function setup_actions() {
 		add_filter( 'job_manager_settings', array( $this, 'job_manager_settings' ) );
-		add_filter( 'gform_field_value_job_email', array( $this, 'field_value_job_email' ) );
+		add_filter( 'gform_notification_email_' . $this->form_id, array( $this, 'notification_email' ) );
 		add_action( 'gform_enqueue_scripts_' . $this->form_id, array( $this, 'javascript' ) );
 	}
 
