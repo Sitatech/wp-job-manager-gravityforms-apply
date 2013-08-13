@@ -87,7 +87,7 @@ class Astoundify_Job_Manager_Apply {
 		return $settings;
 	}
 
-	public function field_value_job_email() {
+	public function notification_email() {
 		global $post;
 		
 		return $post->_application;
