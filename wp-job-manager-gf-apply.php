@@ -6,7 +6,7 @@
  * Author:      Astoundify
  * Author URI:  http://astoundify.com
  * Version:     1.0
- * Text Domain: ajmgfa
+ * Text Domain: job_manager_gf_apply
  */
 
 // Exit if accessed directly
@@ -19,6 +19,9 @@ class Astoundify_Job_Manager_Apply {
 	 */
 	private static $instance;
 
+	/**
+	 * @var $form_id
+	 */
 	private $form_id;
 
 	/**
@@ -40,8 +43,9 @@ class Astoundify_Job_Manager_Apply {
 	public function __construct() {
 		$this->form_id = get_option( 'job_manager_gravity_form' );
 
-		$this->setup_globals();
 		$this->setup_actions();
+		$this->setup_globals();
+		$this->load_textdomain();
 	}
 
 	/**
@@ -55,12 +59,33 @@ class Astoundify_Job_Manager_Apply {
 	private function setup_globals() {
 		$this->file         = __FILE__;
 		
-		$this->basename     = apply_filters( 'ajmgfa_plugin_basenname', plugin_basename( $this->file ) );
-		$this->plugin_dir   = apply_filters( 'ajmgfa_plugin_dir_path',  plugin_dir_path( $this->file ) );
-		$this->plugin_url   = apply_filters( 'ajmgfa_plugin_dir_url',   plugin_dir_url ( $this->file ) );
+		$this->basename     = apply_filters( 'job_manager_gf_apply_plugin_basenname', plugin_basename( $this->file ) );
+		$this->plugin_dir   = apply_filters( 'job_manager_gf_apply_plugin_dir_path',  plugin_dir_path( $this->file ) );
+		$this->plugin_url   = apply_filters( 'job_manager_gf_apply_plugin_dir_url',   plugin_dir_url ( $this->file ) );
 
-		$this->lang_dir     = apply_filters( 'ajmgfa_lang_dir',     trailingslashit( $this->plugin_dir . 'languages' ) );
-		$this->domain       = 'ajmgfa';
+		$this->lang_dir     = apply_filters( 'job_manager_gf_apply_lang_dir',     trailingslashit( $this->plugin_dir . 'languages' ) );
+		$this->domain       = 'job_manager_gf_apply'; 
+	}
+
+	/**
+	 * Loads the plugin language files
+	 *
+ 	 * @since WP Job Manager - Apply with Gravity Forms 1.0
+	 */
+	public function load_textdomain() {
+		$locale        = apply_filters( 'plugin_locale', get_locale(), $this->domain );
+		$mofile        = sprintf( '%1$s-%2$s.mo', $this->domain, $locale );
+
+		$mofile_local  = $this->lang_dir . $mofile;
+		$mofile_global = WP_LANG_DIR . '/' . $this->domain . '/' . $mofile;
+
+		if ( file_exists( $mofile_global ) ) {
+			return load_textdomain( $this->domain, $mofile_global );
+		} elseif ( file_exists( $mofile_local ) ) {
+			return load_textdomain( $this->domain, $mofile_local );
+		}
+
+		return false;
 	}
 
 	/**
@@ -72,25 +97,43 @@ class Astoundify_Job_Manager_Apply {
 	 */
 	private function setup_actions() {
 		add_filter( 'job_manager_settings', array( $this, 'job_manager_settings' ) );
-		add_filter( 'gform_notification_email_' . $this->form_id, array( $this, 'notification_email' ) );
+		add_filter( 'gform_notification_' . $this->form_id, array( $this, 'notification_email' ), 10, 3 );
 	}
 
+	/**
+	 * Add a setting in the admin panel to enter the ID of the Gravity Form to use.
+	 *
+	 * @since WP Job Manager - Apply with Gravity Forms 1.0
+	 *
+	 * @param array $settings
+	 * @return array $settings
+	 */
 	public function job_manager_settings( $settings ) {
 		$settings[ 'job_listings' ][1][] = array(
 			'name'       => 'job_manager_gravity_form',
 			'std'        => null,
-			'label'      => __( 'Gravity Form ID', 'ajmgfa' ),
-			'desc'       => __( 'The ID of the Gravity Form you created for applications.', 'ajmgfa' ),
+			'label'      => __( 'Gravity Form ID', 'job_manager_gf_apply' ),
+			'desc'       => __( 'The ID of the Gravity Form you created for applications.', 'job_manager_gf_apply' ),
 			'attributes' => array()
 		);
 
 		return $settings;
 	}
 
-	public function notification_email() {
+	/**
+	 * Set the notification email when sending an email.
+	 *
+	 * @since WP Job Manager - Apply with Gravity Forms 1.0
+	 *
+	 * @return string The email to notify.
+	 */
+	public function notification_email( $notification, $form, $entry ) {
 		global $post;
-		
-		return $post->_application;
+
+		$notification[ 'toType' ] = 'email';
+		$notification[ 'to' ]     = $post->_application;
+
+		return $notification;
 	}
 }
 add_action( 'init', array( 'Astoundify_Job_Manager_Apply', 'instance' ) );
