@@ -1,7 +1,7 @@
 === Apply with Gravity Forms for WP Job Manager ===
 
 Author URI: http://astoundify.com
-Plugin URI: http://astoundify.com
+Plugin URI: https://github.com/Astoundify/wp-job-manager-gravityforms-apply/
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=contact@appthemer.com&item_name=Donation+for+Astoundify WP Job Manager Gravity Forms
 Contributors: spencerfinnell
 Tags: job, job listing, job apply, gravity forms, wp job manager

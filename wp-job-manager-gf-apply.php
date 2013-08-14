@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WP Job Manager - Apply With Gravity Forms
- * Plugin URI:  https://github.com/astoundify/wp-job-manager-companies
+ * Plugin URI:  https://github.com/Astoundify/wp-job-manager-gravityforms-apply/
  * Description: Apply to jobs that have added an email address via Gravity Forms
  * Author:      Astoundify
  * Author URI:  http://astoundify.com
